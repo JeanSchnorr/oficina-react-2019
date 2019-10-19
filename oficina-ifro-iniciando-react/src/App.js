@@ -9,11 +9,13 @@ import {
   NavbarBrand,
   FormGroup,
   Input,
-  Button} from 'reactstrap'
+  Button,
+  Table} from 'reactstrap'
 const App = props =>{
   const [nome,setNome] = React.useState("");
   const [idade,setIdade] = React.useState(0);
   const [email,setEmail] = React.useState("");
+  const [alunos,setAlunos] = React.useState([]);
 
   const submit = async e => {
     e.preventDefault();
@@ -31,6 +33,14 @@ const App = props =>{
       return;
     }
     alert("Erro ao enviar:"+response.status)
+  }
+  const buscarAlunos = async () =>{
+    const response = await fetch("http://localhost:3001/alunos");
+    if(!response.ok){
+      alert("Erro ao buscar: "+response.status)
+    }
+    const alunos = await response.json();
+    setAlunos(alunos);
   }
   return(
     <React.Fragment>
@@ -68,6 +78,33 @@ const App = props =>{
                 </FormGroup>
                 <Button type="submit" color="primary">Enviar</Button>
               </form>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Button
+              color="primary"
+              className="my-2"
+              type="button"
+              onClick={e => buscarAlunos()}>Buscar</Button>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Idade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alunos.map(aluno =>
+                    <tr>
+                      <td>{aluno.nome}</td>  
+                      <td>{aluno.email}</td>  
+                      <td>{aluno.idade}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
             </Col>
           </Row>
         </Container>
